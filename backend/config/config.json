@@ -1,0 +1,11 @@
+{
+    "mysql_setting":{
+        "host": "10.239.244.165",
+        "port": 2222,
+        "user": "enzodev",
+        "password": "Taidepzai102@!",
+        "db":"rf_db",
+        "autocommit": false
+        
+    }
+}
