@@ -32,24 +32,7 @@ class LoginRequest(BaseModel):
 @app.post("/api/login")
 async def login(request: LoginRequest):
 
-    print(request.username)
-    try:
-       
-        response =await api_services.login(user=request.username,password=request.password)
-        
-       
-        if response["success"] == True:
-            return {
-                "status": "success", 
-                "message": "Đăng nhập thành công", 
-                "token": "fih_vn_secret_token_123" # Token để dùng cho các bước sau
-            }
-        else:
-            raise HTTPException(status_code=401, detail="Sai tài khoản hoặc mật khẩu")
-            
-    except httpx.RequestError:
-        # Nếu server IT bị sập hoặc đứt cáp
-        raise HTTPException(status_code=500, detail="Không thể kết nối đến IT Server")
+    return await api_services.login(user=request.username,password=request.password)
 
 # ---------------------------------------------------------
 # PHẦN 2: API LẤY TỈ LỆ TEST RATE (XỬ LÝ LẠI DỮ LIỆU)
@@ -59,6 +42,7 @@ async def get_dashboard_data():
     """
     Lấy cục dữ liệu to từ IT, lọc lại cho gọn gàng rồi gửi cho React vẽ biểu đồ Recharts
     """
+    
     async with httpx.AsyncClient() as client:
         try:
             # Code thực tế sẽ gọi: await client.get(f"{IT_SERVER_URL}/test-records")
