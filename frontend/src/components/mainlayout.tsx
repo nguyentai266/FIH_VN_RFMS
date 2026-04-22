@@ -20,7 +20,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   
   const role = localStorage.getItem('role') || 'user';
-  const username = localStorage.getItem('username') || 'Guest';
+  const username = localStorage.getItem('username');
 
   const handleLogout = () => {
     localStorage.clear(); // Xóa sạch mọi thứ cho nhanh
@@ -43,8 +43,8 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
   // 2. Khai báo 2 nút bấm to trên Top Bar
   const topMenuItems = [
-    { key: 'production', icon: <AppstoreOutlined />, label: 'PHÂN HỆ SẢN XUẤT (TEST RATE)' },
-    { key: 'warehouse', icon: <DatabaseOutlined />, label: 'PHÂN HỆ KHO HÀNG' },
+    { key: 'production', icon: <AppstoreOutlined />, label: 'Yield Rate' },
+    { key: 'warehouse', icon: <DatabaseOutlined />, label: 'Warehouse' },
   ];
 
   // 3. Khai báo Menu bên trái SẼ THAY ĐỔI tùy theo Phân hệ đang chọn
@@ -93,8 +93,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
           <Dropdown menu={{ items: userDropdownItems }} placement="bottomRight" arrow>
             <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-all">
               <div className="text-right">
-                 <div className="text-sm font-bold text-gray-800 leading-tight">{username}</div>
-                 <div className="text-[11px] font-semibold text-indigo-600 uppercase tracking-wider">{role}</div>
+                <div className="text-[12px] font-semibold text-indigo-600 uppercase tracking-wider">{role} {username}</div>
               </div>
               <Avatar className="bg-indigo-600" icon={<UserOutlined />} size="large" />
             </div>

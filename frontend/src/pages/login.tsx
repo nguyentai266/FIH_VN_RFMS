@@ -21,7 +21,9 @@ const Login = () => {
         
         // Lưu cờ đăng nhập và Token bảo mật vào trình duyệt
         localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('token', response.data.token); 
+        localStorage.setItem('role',response.data.role);
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('username', values.username); 
         
         // Chuyển vào trong
         navigate('/');

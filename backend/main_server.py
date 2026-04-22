@@ -41,7 +41,8 @@ async def login(request: LoginRequest):
         if response["success"] == True:
             return {
                 "status": "success", 
-                "message": "Đăng nhập thành công", 
+                "message": "Đăng nhập thành công",
+                "role":"admin", 
                 "token": "fih_vn_secret_token_123" # Token để dùng cho các bước sau
             }
         else:
