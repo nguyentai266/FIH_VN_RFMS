@@ -29,32 +29,11 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
-@app.post("/api/login")
+@app.post("/api/v1/login")
 async def login(request: LoginRequest):
+    return await api_services.login(user=request.username,
+                                    password=request.password)
 
-<<<<<<< HEAD
-    print(request.username)
-    try:
-       
-        response =await api_services.login(user=request.username,password=request.password)
-        
-       
-        if response["success"] == True:
-            return {
-                "status": "success", 
-                "message": "Đăng nhập thành công",
-                "role":"admin", 
-                "token": "fih_vn_secret_token_123" # Token để dùng cho các bước sau
-            }
-        else:
-            raise HTTPException(status_code=401, detail="Sai tài khoản hoặc mật khẩu")
-            
-    except httpx.RequestError:
-        # Nếu server IT bị sập hoặc đứt cáp
-        raise HTTPException(status_code=500, detail="Không thể kết nối đến IT Server")
-=======
-    return await api_services.login(user=request.username,password=request.password)
->>>>>>> 3ae97c1366d5ddcad41b657827737ceb49ca1a0f
 
 # ---------------------------------------------------------
 # PHẦN 2: API LẤY TỈ LỆ TEST RATE (XỬ LÝ LẠI DỮ LIỆU)

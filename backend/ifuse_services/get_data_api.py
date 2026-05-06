@@ -17,31 +17,41 @@ class GetDataAPI():
         current_path=Path(__file__).parent
         self.template=json.load(open(current_path/"template.json",'r'))
         self.offline = True
-    async def login(self,user,password):
+    async def login(self, user, password):
         url = self.template['login']['url']
         payload = self.template['login']['payload']
-        payload['u']=user
-        payload['p']=password
+        payload['u'] = user
+        payload['p'] = password
+        
         try:
-            if self.offline == True :
-                return {
-                "status": "success", 
-                "message": "Đăng nhập thành công", 
-                "token": "fih_vn_secret_token_123" # Token để dùng cho các bước sau
-            }
-            return
             response = await session.post(url, json=payload)
-            if response.status_code == 200 and response.json()['success'] == True:
-                return {
-                "status": "success", 
-                "message": "Đăng nhập thành công", 
-                "token": "fih_vn_secret_token_123" # Token để dùng cho các bước sau
-            }
-            else:
-                raise HTTPException(status_code=401,detail="Username or Password wrong!!!")
-        except Exception as e:
             
-            raise HTTPException(status_code=500,detail="Server Connection Failed!!!")
+            if response.status_code == 200:
+                try:
+                    res_json = response.json()
+                    if res_json.get('success') == True: 
+                        return {
+                            "success": True, 
+                            "message": "Login Successfuly",
+                            "username" : user,
+                            "role": "admin", 
+                            "cookies": session.cookies 
+                        }
+                    else:
+                        error_msg = res_json.get('message', 'Sai tài khoản hoặc mật khẩu')
+                        raise HTTPException(status_code=401, detail=error_msg)
+                        
+                except ValueError:
+                    raise HTTPException(status_code=401, detail=response.text)
+            else:
+                raise HTTPException(status_code=response.status_code, detail=f"Ifuse Server Error: {response.status_code}")
+                
+        except HTTPException:
+            raise
+            
+        except Exception as e:
+            print(f"Error: {e}")
+            raise HTTPException(status_code=500, detail="Server Connection Error...!!!")
             
         
     async def get_yield(self,list_station):
