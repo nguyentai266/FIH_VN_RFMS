@@ -4,7 +4,7 @@
         "port": 3306,
         "user": "dmste",
         "password": "Dmste@2026",
-        "db":"db_dmste",
+        "db":"te_db",
         "autocommit": false  
     }
 }

@@ -2,8 +2,8 @@
     "login": {
         "url": "https://sfcweb.gg.ftv/Handler/LoginHandler.aspx",
         "payload": {
-            "u": "V1531673",
-            "p": "Taidepzai102##",
+            "u": null,
+            "p": null,
             "lang": "en-us",
             "loc": "S010^B042"
         }
@@ -11,100 +11,100 @@
     "get_yield":{
         "url": "https://sfcweb.gg.ftv/services/WsGLCustomize.asmx/YieldReportFreshFac",
         "payload": {
-            "section":"ASSY",
-            "family":"4CS4",
+            "section":null,
+            "family":null,
             "modelName":"",
             "group":"",
             "line":"",
-            "timeFrom":"2026-03-23 08:00",
-            "timeTo":"2026-03-23 20:00",
+            "timeFrom":null,
+            "timeTo":null,
             "loction":"0",
             "type":"",
             "workOrder":"",
-            "route":"1925031089"}
+            "route":null}
 
     },
     "get_yield_by_station":{
         "url": "https://sfcweb.gg.ftv/services/WsGLCustomize.asmx/YieldReportByStationFreshFac",
         "payload": {
-            "section":"ASSY",
-            "family":"4CS4",
+            "section":null,
+            "family":null,
             "modelName":"",
-            "group":"FATP-RF-5GMMW-COMBO",
+            "group":null,
             "line":"",
-            "timeFrom":"2026-03-23 08:00",
-            "timeTo":"2026-03-23 20:00",
+            "timeFrom":null,
+            "timeTo":null,
             "workOrder":"",
-            "route":"1925031089"}
+            "route":null}
     },
     "get_yield_by_item":{
         "url": "https://sfcweb.gg.ftv/services/WsGLCustomize.asmx/YieldReportByItemFreshFac",
         "payload": {
-            "section":"ASSY",
-            "family":"4CS4",
+            "section":null,
+            "family":null,
             "modelName":"",
-            "group":"FATP-RF-5GMMW-COMBO",
+            "group":null,
             "line":"",
-            "timeFrom":"2026-03-23 08:00",
-            "timeTo":"2026-03-23 20:00",
+            "timeFrom":null,
+            "timeTo":null,
             "workOrder":"",
-            "route":"1925031089"}
+            "route":null}
     },
     "get_detail_item":{
         "url": "https://sfcweb.gg.ftv/services/WsGLCustomize.asmx/YieldReportItemPidFreshFac",
         "payload": {
-            "section":"ASSY",
-            "family":"4CS4",
+            "section":null,
+            "family":null,
             "modelName":"",
-            "group":"FATP-RF-DESENSE",
+            "group":null,
             "line":"",
-            "timeFrom":"2026-03-23 08:00",
-            "timeTo":"2026-03-23 20:00",
+            "timeFrom":null,
+            "timeTo":null,
             "workOrder":"",
-            "item":"desense_meas_mmw"}
+            "item":null}
             
     },
     "get_detail_retest_item":{
         "url": "https://sfcweb.gg.ftv/services/WsGLCustomize.asmx/YieldReportItemPidDetailFac",
         "payload": {
-            "section":"ASSY",
-            "family":"4CS4",
+            "section":null,
+            "family":null,
             "modelName":"",
-            "group":"FATP-RF-DESENSE",
+            "group":null,
             "line":"",
-            "timeFrom":"2026-03-23 08:00",
-            "timeTo":"2026-03-23 20:00",
+            "timeFrom":null,
+            "timeTo":null,
             "workOrder":"",
-            "item":"desense_meas_mmw",
+            "item":null,
             "page":1}
 
     },
     "list_route_name":{
         "url": "https://sfcweb.gg.ftv/services/WsReport.asmx/ListRouteName",
         "payload": {
-            "family":"4CS4",
-            "section":"ASSY"
+            "family":null,
+            "section":null
         }
     },
     "list_line_name":{
         "url": "https://sfcweb.gg.ftv/services/WsReport.asmx/ListLineName2",
         "payload": {
-            "Family":"4CS4",
-            "section":"ASSY"
+            "Family":null,
+            "section":null
         }
     },
     "list_group_name":{
         "url": "https://sfcweb.gg.ftv/services/WsReport.asmx/ListGroupName1",
         "payload": {
-            "section":"ASSY",
-            "family":"4CS4"
+            "section":null,
+            "family":null
             
         }
     },
     "list_family_name":{
         "url": "https://sfcweb.gg.ftv/services/WsReport.asmx/GetFamilyCode",
         "payload":{
-            "section":"ASSY"
+            "section":null
         }
     }
     

@@ -1,21 +1,25 @@
 import asyncio
 import json
+import os
+import sys
 from pathlib import Path
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import httpx
 import pandas as pd
 import urllib3
+from core.logger import worker_logger
 from fastapi import HTTPException
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-config_path='config_api.yaml'
+
 session = httpx.AsyncClient(verify=False)
 #session.options()
 
-class GetDataAPI():
+class IfuseApi():
     def __init__(self) -> None:
         current_path=Path(__file__).parent
-        self.template=json.load(open(current_path/"template.json",'r'))
+        self.template=json.load(open(current_path/"ifuse_template.json",'r'))
         self.offline = True
     async def login(self, user, password):
         url = self.template['login']['url']
@@ -28,18 +32,23 @@ class GetDataAPI():
             
             if response.status_code == 200:
                 try:
-                    res_json = response.json()
-                    if res_json.get('success') == True: 
-                        return {
-                            "success": True, 
-                            "message": "Login Successfuly",
-                            "username" : user,
-                            "role": "admin", 
-                            "cookies": session.cookies 
-                        }
+                    if "success" in response.text: 
+                        res_json = response.json()
+                        if res_json.get('success') == True: 
+                            worker_logger.info(f"Login OK, Username:{user}")
+                            return {
+                                "success": True, 
+                                "message": "Login OK",
+                                "cookies": session.cookies 
+                            }
                     else:
-                        error_msg = res_json.get('message', 'Sai tài khoản hoặc mật khẩu')
-                        raise HTTPException(status_code=401, detail=error_msg)
+                        worker_logger.info(f"Login Error, Username:{user}, Message:{response.text}")
+                        return {
+                            "success": False, 
+                            "message": response.text,
+                            "cookies": session.cookies 
+                            }
+                    
                         
                 except ValueError:
                     raise HTTPException(status_code=401, detail=response.text)
@@ -115,22 +124,18 @@ class GetDataAPI():
 if __name__=="__main__":
     # 1. Tạo một hàm main bất đồng bộ để bọc code lại
     async def main():
-        api = GetDataAPI()
+        api = IfuseApi()
         u = "V1531673"
         p = "Taidepzai102@@"
         
         # Bây giờ bạn có thể dùng await thoải mái bên trong hàm này
         result = await api.login(user=u, password=p)
-        print("ok:", type(result))
         
-        line = await api.get_route_names(family="4CS4",section="ASSY")
-        print(line)
-        # Nếu muốn test thêm hàm get_groups thì gọi tiếp ở đây:
-        # if headers:
-        #     groups = await api.get_groups(header=headers, family="...", section="...")
-        #     print(groups)
+        
+        
+        #line = await api.get_route_names(family="4CS4",section="ASSY")
+        #print(line)
 
-    # 2. Dùng asyncio để kích hoạt hàm main() chạy
     asyncio.run(main())
     
      
