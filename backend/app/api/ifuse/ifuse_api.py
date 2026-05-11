@@ -1,14 +1,11 @@
 import asyncio
 import json
-import os
-import sys
 from pathlib import Path
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import httpx
 import pandas as pd
 import urllib3
-from core.logger import worker_logger
+from core.logger import logger, worker_logger
 from fastapi import HTTPException
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -31,42 +28,58 @@ class IfuseApi():
             response = await session.post(url, json=payload)
             
             if response.status_code == 200:
-                try:
-                    if "success" in response.text: 
-                        res_json = response.json()
-                        if res_json.get('success') == True: 
-                            worker_logger.info(f"Login OK, Username:{user}")
-                            return {
-                                "success": True, 
-                                "message": "Login OK",
-                                "cookies": session.cookies 
-                            }
-                    else:
-                        worker_logger.info(f"Login Error, Username:{user}, Message:{response.text}")
+                
+                if '"success":true' in response.text: 
+                    res_json = response.json()
+                    if res_json.get('success') == True: 
+                        worker_logger.info(f"Login OK, Username:{user}")
+                        logger.info(f"Login OK, Username:{user}")
                         return {
-                            "success": False, 
-                            "message": response.text,
+                            "success": True, 
+                            "message": "Login OK",
                             "cookies": session.cookies 
-                            }
-                    
-                        
-                except ValueError:
-                    raise HTTPException(status_code=401, detail=response.text)
+                        }
+                else:
+                    worker_logger.info(f"Login Error, Username: {user}, Message: {response.text}")
+                    logger.info(f"Login Error, Username: {user}, Message: {response.text}")
+                    return {
+                        "success": False, 
+                        "message": response.text,
+                        "cookies": None 
+                        }
+    
             else:
+                worker_logger.error("Server Permission Denied")
+                logger.error("Server Permission Denied")
                 raise HTTPException(status_code=response.status_code, detail=f"Ifuse Server Error: {response.status_code}")
                 
-        except HTTPException:
-            raise
+        except httpx.ConnectError:
+            worker_logger.error("Connection Wrong, Check Lan Ethernet")
+            logger.error("Connection Wrong, Check Lan Ethernet")
+            raise HTTPException(status_code=503, detail="Check connect ethernet")
+            
+        except httpx.TimeoutException:
+            worker_logger.error("Server Overload")
+            logger.error("Server Overload")
+            raise HTTPException(status_code=504, detail="Server Overload (Timeout).")
+            
+        except httpx.RequestError as e:
+            # Lỗi mạng chung chung
+            raise HTTPException(status_code=502, detail=f"API: {str(e)}")
             
         except Exception as e:
-            print(f"Error: {e}")
-            raise HTTPException(status_code=500, detail="Server Connection Error...!!!")
-            
+            print(f"Lỗi hệ thống: {e}")
+            raise HTTPException(status_code=500, detail="Internal Type")
         
-    async def get_yield(self,list_station):
+    async def get_yield(self,list_station,section,family,timeFrom,timeTo,route):
         key="get_yield"
         url = self.template[key]['url']
         payload = self.template[key]['payload']
+        payload['section'] = section
+        payload['family'] = family
+        payload['timeFrom'] = timeFrom
+        payload['timeTo'] = timeTo
+        payload['route'] = route
         try:
             response = await session.post(url,json=payload)
             data=json.loads(response.json()["d"])
@@ -74,7 +87,7 @@ class IfuseApi():
             df=pd.DataFrame(filtered_groups)
             return filtered_groups
         except Exception as e:
-            pass
+            print(e)
     
     async def get_groups(self,family,section):
         key="list_group_name"
@@ -114,7 +127,7 @@ class IfuseApi():
         payload["section"]=section
 
         response=await session.post(url,json=payload)
-        return list([{"Text":item["Text"],"Value":item["Value"]} for item in response.json()['d']])
+        return list([{"Text": item["Text"],"Value": item["Value"]} for item in response.json()['d']])
 
 
 
@@ -127,10 +140,11 @@ if __name__=="__main__":
         api = IfuseApi()
         u = "V1531673"
         p = "Taidepzai102@@"
-        
+        stations= ["FATP-RF-5GMMW-COMBO","FATP-RF-CELL","FATP-RF-WIFIBT","FATP-AUDIO"]
         # Bây giờ bạn có thể dùng await thoải mái bên trong hàm này
         result = await api.login(user=u, password=p)
-        
+       # res = await api.get_yield(stations)
+        #print(res)
         
         
         #line = await api.get_route_names(family="4CS4",section="ASSY")
