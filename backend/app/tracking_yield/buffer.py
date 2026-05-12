@@ -157,30 +157,27 @@ from PIL import Image, ImageDraw, ImageFont
 OUTPUT_DIR = "images_export"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# Font chữ (Nên dùng font Sans-serif như Roboto hoặc Arial cho hiện đại)
-# Windows: C:\\Windows\\Fonts\\arial.ttf
-# Linux: /usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
-FONT_BOLD_PATH = "C:\\Windows\\Fonts\\arialbd.ttf"
-FONT_REG_PATH = "C:\\Windows\\Fonts\\arial.ttf"
+FONT_BOLD_PATH = "C:\\Windows\\Fonts\\tahomabd.ttf"
+FONT_REG_PATH = "C:\\Windows\\Fonts\\tahoma.ttf"
 
-def draw_pro_dashboard(data_list, filename="pro_dashboard.png"):
+def draw_dashboard(data_list, project, line, start_time, end_time, filename="pro_dashboard.png"):
     # --- 1. CẤU HÌNH MÀU SẮC (UI/UX) ---
-    COLOR_BG = (18, 22, 33)        # Xanh đen đậm (Dark Theme)
-    COLOR_CARD = (30, 39, 58)      # Xanh xám (Thẻ nội dung)
-    COLOR_ACCENT = (0, 120, 215)   # Xanh dương điểm nhấn
+    COLOR_BG = (18, 22, 33)        # Xanh đen đậm
+    COLOR_CARD = (30, 39, 58)      # Xanh xám
+    COLOR_ACCENT = (56, 189, 248)  # Xanh dương neon (Điểm nhấn cho Project/Line)
     COLOR_TEXT_MAIN = (255, 255, 255)
     COLOR_TEXT_DIM = (160, 174, 192)
     COLOR_SUCCESS = (72, 187, 120) # Xanh lá
-    COLOR_DANGER = (245, 101, 101)  # Đỏ
+    COLOR_WARNING = (236, 201, 75) # Vàng cam (Cho cột Retest %)
+    COLOR_DANGER = (245, 101, 101) # Đỏ
 
     # --- 2. TÍNH TOÁN KÍCH THƯỚC ---
-    width = 1000
+    width = 1000  # Mở rộng ngang để chứa thêm cột
     row_height = 50
-    header_height = 100
+    header_height = 120 # Tăng height để chứa thêm thông tin Project/Line
     kpi_card_height = 120
     footer_height = 40
     
-    # Chiều cao tổng dựa trên số lượng hàng
     total_height = header_height + kpi_card_height + (len(data_list) + 1) * row_height + footer_height + 60
     
     img = Image.new('RGB', (width, total_height), color=COLOR_BG)
@@ -190,81 +187,114 @@ def draw_pro_dashboard(data_list, filename="pro_dashboard.png"):
     font_title = ImageFont.truetype(FONT_BOLD_PATH, 32)
     font_kpi_val = ImageFont.truetype(FONT_BOLD_PATH, 36)
     font_kpi_lab = ImageFont.truetype(FONT_REG_PATH, 16)
+    font_meta = ImageFont.truetype(FONT_REG_PATH, 20)
     font_table_h = ImageFont.truetype(FONT_BOLD_PATH, 18)
-    font_table_d = ImageFont.truetype(FONT_REG_PATH, 17)
+    font_table_d = ImageFont.truetype(FONT_REG_PATH, 18)
 
-    # --- 3. VẼ TIÊU ĐỀ (HEADER) ---
-    draw.text((40, 30), "YIELD RATE PERFORMANCE", font=font_title, fill=COLOR_TEXT_MAIN)
-    draw.text((40, 70), "Factory: Tu Son, Bac Ninh | Date: 11/05/2026", font=font_kpi_lab, fill=COLOR_TEXT_DIM)
+    # --- 3. VẼ TIÊU ĐỀ & THÔNG TIN DỰ ÁN (HEADER) ---
+    draw.text((40, 20), "YIELD RATE REPORT", font=font_title, fill=COLOR_TEXT_MAIN)
+    draw.line([(40, 60), (width - 40, 60)], fill=(45, 55, 72), width=1)
+    # Chuỗi thông tin Meta (Project, Line, Time)
+    meta_text = f"Project: {project}   |   Line: {line}   |   Time: {start_time} - {end_time}"
+    draw.text((40, 70), meta_text, font=font_meta, fill=COLOR_ACCENT)
+
+    # Kẻ một đường line mờ ngăn cách header
+    draw.line([(40, 105), (width - 40, 105)], fill=(45, 55, 72), width=1)
 
     # --- 4. VẼ CÁC THẺ KPI TÓM TẮT ---
     total_all = sum(int(row['COUNT_TOTAL']) for row in data_list)
-    fail_all = sum(int(row['FINAL_FAIL']) for row in data_list)
-    overall_yield = f"{(1 - (fail_all/total_all))*100:.2f}%" if total_all > 0 else "N/A"
+    final_fail_all = sum(int(row['FINAL_FAIL']) for row in data_list)
+    first_fail_all = sum(int(row['FIRST_FAIL']) for row in data_list)
+    first_pass_all = sum(int(row['FIRST_PASS']) for row in data_list)
+    retest_all = sum(int(row['RETEST_PASS']) for row in data_list)
+
+    rpy_overall_rate= f"{(retest_all/total_all)*100:.2f}%" if total_all > 0 else "N/A"
+    ffy_overall_rate= f"{(final_fail_all/total_all)*100:.2f}%" if total_all > 0 else "N/A"
+
+    fpy_overall_rate= f"{(first_pass_all/total_all)*100:.2f}%" if total_all > 0 else "N/A"
+    #overall_yield = f"{(1 - (fail_all/total_all))*100:.2f}%" if total_all > 0 else "N/A"
 
     kpis = [
-        {"label": "OVERALL YIELD", "value": overall_yield, "color": COLOR_SUCCESS},
-        {"label": "TOTAL COUNT", "value": f"{total_all:,}", "color": COLOR_TEXT_MAIN},
-        {"label": "TOTAL FINAL FAIL", "value": str(fail_all), "color": COLOR_DANGER}
+        {"label": "FIRST PASS RATE", "value": fpy_overall_rate, "color": COLOR_SUCCESS},
+        {"label": "RETEST PASS RATE", "value": rpy_overall_rate, "color": COLOR_TEXT_MAIN},
+        {"label": "FINAL FAIL RATE", "value": ffy_overall_rate, "color": COLOR_DANGER}
     ]
 
     card_w = (width - 120) // 3
     for i, kpi in enumerate(kpis):
         x_start = 40 + i * (card_w + 20)
-        # Vẽ thẻ bo góc
-        draw.rounded_rectangle([x_start, 110, x_start + card_w, 210], radius=12, fill=COLOR_CARD)
-        # Vẽ Label
-        draw.text((x_start + 20, 130), kpi['label'], font=font_kpi_lab, fill=COLOR_TEXT_DIM)
-        # Vẽ Value
-        draw.text((x_start + 20, 155), kpi['value'], font=font_kpi_val, fill=kpi['color'])
+        draw.rounded_rectangle([x_start, 125, x_start + card_w, 225], radius=12, fill=COLOR_CARD)
+        draw.text((x_start + 20, 145), kpi['label'], font=font_kpi_lab, fill=COLOR_TEXT_DIM)
+        draw.text((x_start + 20, 170), kpi['value'], font=font_kpi_val, fill=kpi['color'])
 
     # --- 5. VẼ BẢNG DỮ LIỆU ---
-    table_y_start = 240
-    headers = ["STATION NAME", "TOTAL", "1st FAIL", "RETEST", "FINAL FAIL", "STATUS"]
-    col_x = [40, 300, 450, 580, 720, 850] # Tọa độ x của các cột
+    table_y_start = 260
+    # Thêm cột RETEST %
+    headers = ["Station Name", "Total Input", "First Fail", "Retest Pass", "Final Fail", "Retest Rate"]
+    # Chia lại tọa độ x cho 7 cột (Tổng width 1150)
+    col_x = [70, 350, 480, 590, 710, 830] 
 
     # Vẽ nền Header bảng
     draw.rounded_rectangle([40, table_y_start, width - 40, table_y_start + row_height], radius=8, fill=COLOR_CARD)
     for i, h_text in enumerate(headers):
-        draw.text((col_x[i], table_y_start + 15), h_text, font=font_table_h, fill=COLOR_TEXT_DIM)
+        draw.text((col_x[i], table_y_start + 16), h_text, font=font_table_h, fill=COLOR_TEXT_DIM)
 
     # Vẽ các dòng dữ liệu
     for idx, row in enumerate(data_list):
         y_pos = table_y_start + (idx + 1) * row_height + 10
         
-        # Vẽ đường kẻ mờ phân cách hàng
         draw.line([(40, y_pos + row_height - 5), (width - 40, y_pos + row_height - 5)], fill=(45, 55, 72))
 
-        # Đổ data
-        draw.text((col_x[0], y_pos + 12), row['GROUP_NAME'], font=font_table_d, fill=COLOR_TEXT_MAIN)
-        draw.text((col_x[1], y_pos + 12), f"{int(row['COUNT_TOTAL']):,}", font=font_table_d, fill=COLOR_TEXT_MAIN)
-        draw.text((col_x[2], y_pos + 12), str(int(row['FIRST_FAIL'])), font=font_table_d, fill=COLOR_TEXT_MAIN)
-        draw.text((col_x[3], y_pos + 12), str(int(row['RETEST_PASS'])), font=font_table_d, fill=COLOR_TEXT_MAIN)
+        # Lấy các chỉ số
+        station_name = row['GROUP_NAME']
+        total_input = int(row['COUNT_TOTAL'])
+        first_fail = int(row['FIRST_FAIL'])
+        retest_pass = int(row['RETEST_PASS'])
+        final_fail = int(row['FINAL_FAIL'])
+        
+        # Tính phần trăm Retest
+        retest_rate = (retest_pass / total_input * 100) if total_input > 0 else 0.0
+
+        # Đổ data text
+        draw.text((col_x[0], y_pos + 15), station_name, font=font_table_d, fill=COLOR_TEXT_MAIN)
+        draw.text((col_x[1], y_pos + 15), str(total_input), font=font_table_d, fill=COLOR_TEXT_MAIN)
+        draw.text((col_x[2], y_pos + 15), str(first_fail), font=font_table_d, fill=COLOR_TEXT_MAIN)
+        draw.text((col_x[3], y_pos + 15), str(retest_pass), font=font_table_d, fill=COLOR_TEXT_MAIN)
+        
+        # In Retest % (Màu vàng cam để dễ phân biệt)
         
         # Final Fail bôi đỏ nếu > 0
-        f_fail = int(row['FINAL_FAIL'])
-        f_color = COLOR_DANGER if f_fail > 0 else COLOR_TEXT_MAIN
-        draw.text((col_x[4], y_pos + 12), str(f_fail), font=font_table_d, fill=f_color)
+        final_color = COLOR_DANGER if final_fail > 0 else COLOR_TEXT_MAIN
+        retest_color = COLOR_SUCCESS if retest_rate < 1 else (COLOR_WARNING if retest_rate < 3 else COLOR_DANGER )
+        draw.text((col_x[4], y_pos + 15), str(final_fail), font=font_table_d, fill=final_color)
+        draw.text((col_x[5], y_pos + 15), f"{retest_rate:.2f}%", font=font_table_d, fill=retest_color)
+
 
         # Trạng thái (Pill)
-        status_color = COLOR_SUCCESS if f_fail == 0 else COLOR_DANGER
-        status_text = "PASS" if f_fail == 0 else "ALERT"
-        # Vẽ cái nhãn (Pill)
-        draw.rounded_rectangle([col_x[5], y_pos + 8, col_x[5] + 70, y_pos + 32], radius=12, fill=status_color)
-        # Căn chữ vào giữa nhãn
-        draw.text((col_x[5] + 15, y_pos + 10), status_text, font=font_table_d, fill=(255,255,255))
+       
 
-    # Lưu ảnh
+    # --- 6. LƯU ẢNH ---
     filepath = os.path.join(OUTPUT_DIR, filename)
     img.save(filepath)
-    print(f"ok {filepath}")
+    print(f"ok: {filepath}")
     return filepath
 
-# Test data của bạn
-data = [
-    {'GROUP_NAME': 'FATP-AUDIO', 'COUNT_TOTAL': 160.0, 'FIRST_FAIL': 3.0, 'RETEST_PASS': 2.0, 'FINAL_FAIL': 1.0},
-    {'GROUP_NAME': 'FATP-RF-5GMMW', 'COUNT_TOTAL': 108.0, 'FIRST_FAIL': 2.0, 'RETEST_PASS': 2.0, 'FINAL_FAIL': 0.0},
-    {'GROUP_NAME': 'FATP-RF-CELL', 'COUNT_TOTAL': 159.0, 'FIRST_FAIL': 1.0, 'RETEST_PASS': 1.0, 'FINAL_FAIL': 0.0}
-]
+# =========================================
+# CÁCH CHẠY THỬ VỚI DATA MỚI
+# =========================================
+if __name__ == "__main__":
+    test_data = [
+        {'GROUP_NAME': 'FATP-AUDIO', 'COUNT_TOTAL': 160.0, 'FIRST_FAIL': 20.0, 'RETEST_PASS': 20.0, 'FINAL_FAIL': 1.0},
+        {'GROUP_NAME': 'FATP-RF-5GMMW-COMBO', 'COUNT_TOTAL': 108.0, 'FIRST_FAIL': 2.0, 'RETEST_PASS': 2.0, 'FINAL_FAIL': 0.0},
+        {'GROUP_NAME': 'FATP-RF-CELL', 'COUNT_TOTAL': 159.0, 'FIRST_FAIL': 1.0, 'RETEST_PASS': 1.0, 'FINAL_FAIL': 0.0}
+    ]
 
-draw_pro_dashboard(data)
+    # Truyền thêm các tham số Project, Line, Time vào hàm
+    draw_dashboard(
+        data_list=test_data, 
+        project="4CS4", 
+        line="4CS4_FVN-E2F3-G01", 
+        start_time="08:00", 
+        end_time="20:00",
+        filename="yield_d26_line02.png"
+    )
