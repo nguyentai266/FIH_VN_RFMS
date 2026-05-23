@@ -3,7 +3,7 @@ import os
 from logging.handlers import RotatingFileHandler
 
 
-def setup_logger(logger_name="Log", log_filename="system.log"):
+def setup_logger(logger_name="log", log_filename="system.log"):
    
     if not os.path.exists('Log'):
         os.makedirs('Log')
@@ -31,6 +31,6 @@ def setup_logger(logger_name="Log", log_filename="system.log"):
     return logger
 logger = setup_logger(logger_name="app", log_filename="app.log")
 service_logger = setup_logger(logger_name="service", log_filename="services.log")
-db_logger = setup_logger(logger_name="Database",log_filename="db.log")
-web_logger = setup_logger(logger_name="WebApp", log_filename="web_app.log")
-worker_logger = setup_logger(logger_name="AutoWorker", log_filename="runner_worker.log")
+db_logger = setup_logger(logger_name="database",log_filename="db.log")
+web_logger = setup_logger(logger_name="webApp", log_filename="web_app.log")
+worker_logger = setup_logger(logger_name="autoworker", log_filename="worker.log")
