@@ -11,7 +11,7 @@ my_cookies = {
     "local-username": "taint1",
     "local-logintype": "LDAP",
     "local-userid": "300",
-    "local-token": "f0e37afb59afd828f4bc21ba14be4bbf209f1ff8d42542c40bc44590365e0af7"
+    "local-token": "28a840973370d18cef2b50c2c9e3d75ba31607ce19ec0fe6ac368772396e3506"
 }
 
 # Giả lập luôn cái User-Agent cho giống y hệt Google Chrome của sếp
