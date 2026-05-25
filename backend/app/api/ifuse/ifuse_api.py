@@ -10,7 +10,7 @@ from fastapi import HTTPException
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-session = httpx.AsyncClient(verify=False)
+#session = httpx.AsyncClient(verify=False)
 #session.options()
 
 class IfuseApi():
@@ -18,6 +18,13 @@ class IfuseApi():
         current_path=Path(__file__).parent
         self.template=json.load(open(current_path/"ifuse_template.json",'r'))
         self.offline = True
+        self.session = None
+    async def __aenter__(self):
+        self.session = httpx.AsyncClient(verify=False)
+        return self
+    async def __aexit__(self):
+        if self.session:
+            await self.session.aclose()
     async def login(self, user, password):
         url = self.template['login']['url']
         payload = self.template['login']['payload']
@@ -25,7 +32,9 @@ class IfuseApi():
         payload['p'] = password
         
         try:
-            response = await session.post(url, json=payload)
+            if self.session is None:
+                self.session =  httpx.AsyncClient(follow_redirects=True)
+            response = await self.session.post(url, json=payload)
             
             if response.status_code == 200:
                 
@@ -37,7 +46,7 @@ class IfuseApi():
                         return {
                             "success": True, 
                             "message": "Login OK",
-                            "cookies": session.cookies 
+                            "cookies": self.session.cookies 
                         }
                 else:
                     worker_logger.info(f"Login Error, Username: {user}, Message: {response.text}")
@@ -68,7 +77,7 @@ class IfuseApi():
             raise HTTPException(status_code=502, detail=f"API: {str(e)}")
             
         except Exception as e:
-            print(f"Lỗi hệ thống: {e}")
+            print(f"System Error: {e}")
             raise HTTPException(status_code=500, detail="Internal Type")
         
     async def get_yield(self,list_station,section,family,timeFrom,timeTo,route):
@@ -81,7 +90,7 @@ class IfuseApi():
         payload['timeTo'] = timeTo
         payload['route'] = route
         try:
-            response = await session.post(url,json=payload)
+            response = await self.session.post(url,json=payload) # type : ignore
             data=json.loads(response.json()["d"])
             filtered_groups = [item for item in data if item['GROUP_NAME'] in list_station]
             df=pd.DataFrame(filtered_groups)
@@ -96,7 +105,7 @@ class IfuseApi():
         payload["family"]=family
         payload["section"]=section
 
-        response= await session.post(url,json=payload)
+        response= await self.session.post(url,json=payload)
         
         return list([item["Value"] for item in response.json()['d']])
     
@@ -107,7 +116,7 @@ class IfuseApi():
         payload["Family"]=family
         payload["section"]=section
 
-        response=await session.post(url,json=payload)
+        response=await self.session.post(url,json=payload)
         return list([item["Value"] for item in response.json()['d']])
     
     async def get_familys(self,section):
@@ -116,7 +125,7 @@ class IfuseApi():
         payload = self.template[key]['payload']
         payload["section"]=section
 
-        response=await session.post(url,json=payload)
+        response=await self.session.post(url,json=payload)
         return list([item["Value"] for item in response.json()['d']])
     
     async def get_route_names(self,family,section):
@@ -126,7 +135,7 @@ class IfuseApi():
         payload["family"]=family
         payload["section"]=section
 
-        response=await session.post(url,json=payload)
+        response=await self.session.post(url,json=payload)
         return list([{"Text": item["Text"],"Value": item["Value"]} for item in response.json()['d']])
 
 
