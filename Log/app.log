@@ -23,3 +23,12 @@
 2026-05-12 13:43:13 - INFO - [ifuse_api.py:36] --> Login OK, Username:V1531673
 2026-05-12 13:43:34 - INFO - [ifuse_api.py:36] --> Login OK, Username:V1531673
 2026-05-12 13:49:13 - INFO - [ifuse_api.py:36] --> Login OK, Username:V1531673
+2026-06-06 08:21:44 - INFO - [ifuse_api.py:72] --> Login Error, Username: V1531673, Message: Invalid username or password, please check and try again
+2026-06-06 08:22:02 - INFO - [ifuse_api.py:64] --> Login OK, Username: V1531673
+2026-07-02 11:07:44 - INFO - [ifuse_api.py:64] --> Login OK, Username: V1531673
+2026-07-02 11:08:31 - INFO - [ifuse_api.py:64] --> Login OK, Username: V1531673
+2026-07-02 11:09:47 - INFO - [ifuse_api.py:64] --> Login OK, Username: V1531673
+2026-07-02 11:10:20 - INFO - [ifuse_api.py:64] --> Login OK, Username: V1531673
+2026-07-02 11:11:08 - INFO - [ifuse_api.py:64] --> Login OK, Username: V1531673
+2026-07-02 11:12:18 - INFO - [ifuse_api.py:64] --> Login OK, Username: V1531673
+2026-07-02 11:13:00 - INFO - [ifuse_api.py:64] --> Login OK, Username: V1531673

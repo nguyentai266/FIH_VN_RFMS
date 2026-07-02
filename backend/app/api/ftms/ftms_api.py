@@ -6,7 +6,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 
-class FTMSApiServices():
+class FTMSApi():
     def __init__(self) -> None:
         self.client = None
         self.session =None
@@ -18,6 +18,24 @@ class FTMSApiServices():
         if self.client:
             await self.client.aclose()
 
+    async def _send_request(self, url: str, payload_updates: dict) -> httpx.Response:
+        if self.session is None:
+            self.session = httpx.AsyncClient(verify=False, follow_redirects=True)
+            
+        try:
+           
+            return await self.session.post(url, json=payload, timeout=20.0)
+        except httpx.RequestError as e:
+        
+            if url.startswith("https://"):
+                fallback_url = url.replace("https://", "http://")
+                
+                
+                
+                self.template[key]['url'] = fallback_url
+                return await self.session.post(fallback_url, json=payload, timeout=20.0)
+            raise e
+
     async def api_login(self,username,password) ->object:
         if self.client is None:
             self.client =  httpx.AsyncClient(follow_redirects=True)
@@ -26,7 +44,6 @@ class FTMSApiServices():
            
             api_url = "http://10.239.73.165:8095/api/auth/login"
             api_res = await self.client.post(url=api_url, json={"username": username, "password": password})
-            
             
             web_url = "http://10.239.73.165:8095/auth/login"
             await self.client.post(url=web_url, data={"username": username, "password": password})
@@ -154,11 +171,14 @@ async def run():
     
     api = FTMSApiServices()
     await api.api_login(username='taint1',password="Quenmeroi102@")
-    data = await api.get_station_info(project='4CS4')
-    api.parser_html_to_csv(data)
+    #data = await api.get_station_info(project='4CS4')
+    #api.parser_html_to_csv(data)
 
     #await get_station_info(project='4CS4')
-    #record_list = await api.get_record_list(project='4CS4',dut_id='63130DLKY0000H',test_mode='DEBUG')
-    #json_data=await api.get_record_detail(project="4CS4",test_start=1778904004416,test_end=1778904037255,record_main_id=999248)
+    record_list = await api.get_record_list(project='PKK4',dut_id='65210DLDV003HB',test_mode='DEBUG')
+    #print(record_list)
+    json_data=await api.get_record_detail(project="PKK4",test_start=1779953056745,test_end=1779953683600,record_main_id=2006618)
+    print(json_data)
+    api.convert_json2csv(json_data=json_data)
     
 asyncio.run(run())

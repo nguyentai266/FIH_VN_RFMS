@@ -1,5 +1,6 @@
 import asyncio
 
+import pandas as pd
 from api.ifuse.ifuse_api import IfuseApi
 from tracking_yield import buffer
 from tracking_yield.webhook import notify_send_message
@@ -14,29 +15,15 @@ request={"list_station" : stations,
 api = IfuseApi()
 
 async def api_c():
+    
     await api.login("V1531673","Taidepzai102@@")
-    res= await api.get_yield(**request)
-    card= buffer.draw_dashboard(res,'4CS4','4CS4_FVN-E2F3-G01',"2026-05-12 08:00","2026-05-12 20:00")
-    notify_send_message(card)
-    print(res)
-    asyncio.run(api_c())
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
+    df = pd.read_csv('list_sn.csv')
+    list_sn = df['sn'].to_list()
+    for sn in list_sn:
 
-# 1. Xác thực bằng file JSON của Service Account
-SCOPES = ['https://www.googleapis.com/auth/chat.messages.create']
-creds = service_account.Credentials.from_service_account_file('service-account-key.json', scopes=SCOPES)
-chat = build('chat', 'v1', credentials=creds)
+        res= await api.get_product_info(SN=sn)
+        info_imei = res[6]
+        
 
-# 2. Upload file ảnh lên Google trước
-file_metadata = {'name': 'yield_report.png'}
-media = MediaFileUpload('pro_dashboard.png', mimetype='image/png')
-attachment = chat.media().upload(parent='spaces/XXXXX', body=file_metadata, media_body=media).execute()
-
-# 3. Gửi tin nhắn kèm theo cái ảnh vừa upload
-message = {
-    'text': 'Đây là báo cáo Yield Rate mới nhất!',
-    'attachment': [attachment]
-}
-chat.spaces().messages().create(parent='spaces/XXXXX', body=message).execute()
+asyncio.run(api_c())
+asyncio.run(api_c())

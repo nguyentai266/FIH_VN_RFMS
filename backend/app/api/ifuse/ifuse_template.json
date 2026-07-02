@@ -106,6 +106,13 @@
         "payload":{
             "section":null
         }
+    },
+    "get_product_info":{
+        "url": "https://sfcweb.gg.ftv/services/WsReport.asmx/GetProductInfo",
+        "payload":{
+            "sn":null,
+            "convert":"1"
+        }
     }
     
 }

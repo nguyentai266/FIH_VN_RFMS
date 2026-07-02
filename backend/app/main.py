@@ -1,13 +1,13 @@
 import os
 
 import httpx
+from api.ifuse.ifuse_api import IfuseApi
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from ifuse_services.get_data_api import GetDataAPI
 from pydantic import BaseModel
 
-api_services=GetDataAPI()
+api_services=IfuseApi()
 app = FastAPI(title="FIH VN - RFMS Backend")
 
 # 1. Cấu hình CORS (Chỉ dùng khi đang code, React chạy port 5173 gọi sang port 8000)

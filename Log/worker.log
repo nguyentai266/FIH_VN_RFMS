@@ -1,0 +1,24 @@
+2026-06-06 08:12:00 - WARNING - [ifuse_api.py:46] --> Error with method get_yield.Retry with HTTP: http://sfcweb.gg.ftv/services/WsGLCustomize.asmx/YieldReportFreshFac
+2026-06-06 08:12:00 - ERROR - [ifuse_api.py:109] --> Error in get_yield: [Errno 11001] getaddrinfo failed
+2026-06-06 08:14:15 - WARNING - [ifuse_api.py:46] --> Error with method get_yield.Retry with HTTP: http://sfcweb.gg.ftv/services/WsGLCustomize.asmx/YieldReportFreshFac
+2026-06-06 08:14:35 - ERROR - [ifuse_api.py:109] --> Error in get_yield: 
+2026-06-06 08:16:00 - WARNING - [ifuse_api.py:46] --> Error with method get_yield.Retry with HTTP: http://sfcweb.gg.ftv/services/WsGLCustomize.asmx/YieldReportFreshFac
+2026-06-06 08:16:00 - ERROR - [ifuse_api.py:108] --> Error in get_yield: [Errno 11001] getaddrinfo failed
+2026-06-06 08:19:57 - ERROR - [ifuse_api.py:110] --> Error in get_yield: 'd'
+2026-06-06 08:20:56 - ERROR - [ifuse_api.py:110] --> Error in get_yield: 'd'
+2026-06-06 08:21:44 - INFO - [ifuse_api.py:71] --> Login Error, Username: V1531673, Message: Invalid username or password, please check and try again
+2026-06-06 08:21:45 - ERROR - [ifuse_api.py:110] --> Error in get_yield: 'd'
+2026-06-06 08:22:02 - INFO - [ifuse_api.py:63] --> Login OK, Username: V1531673
+2026-06-06 08:22:48 - ERROR - [ifuse_api.py:110] --> Error in get_yield: 'd'
+2026-06-06 13:02:41 - WARNING - [ifuse_api.py:47] --> Error with method get_yield.Retry with HTTP: http://sfcweb.gg.ftv/services/WsGLCustomize.asmx/YieldReportFreshFac
+2026-06-06 13:02:41 - ERROR - [ifuse_api.py:110] --> Error in get_yield: [Errno 11001] getaddrinfo failed
+2026-06-06 13:03:11 - WARNING - [ifuse_api.py:47] --> Error with method get_yield.Retry with HTTP: http://sfcweb.gg.ftv/services/WsGLCustomize.asmx/YieldReportFreshFac
+2026-06-06 13:03:11 - ERROR - [ifuse_api.py:110] --> Error in get_yield: [Errno 11001] getaddrinfo failed
+2026-06-06 13:05:21 - ERROR - [ifuse_api.py:110] --> Error in get_yield: 'd'
+2026-07-02 11:07:44 - INFO - [ifuse_api.py:63] --> Login OK, Username: V1531673
+2026-07-02 11:08:31 - INFO - [ifuse_api.py:63] --> Login OK, Username: V1531673
+2026-07-02 11:09:47 - INFO - [ifuse_api.py:63] --> Login OK, Username: V1531673
+2026-07-02 11:10:20 - INFO - [ifuse_api.py:63] --> Login OK, Username: V1531673
+2026-07-02 11:11:08 - INFO - [ifuse_api.py:63] --> Login OK, Username: V1531673
+2026-07-02 11:12:18 - INFO - [ifuse_api.py:63] --> Login OK, Username: V1531673
+2026-07-02 11:13:00 - INFO - [ifuse_api.py:63] --> Login OK, Username: V1531673
